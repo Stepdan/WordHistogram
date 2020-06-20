@@ -4,7 +4,7 @@
 
 #include <QObject>
 
-namespace Utils
+namespace Util
 {
 
 class Forwarder : public QObject

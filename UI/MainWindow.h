@@ -4,6 +4,8 @@
 
 #include <QMainWindow>
 
+#include "Proc/Interfaces/IHistogram.h"
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -14,6 +16,10 @@ public:
 
 signals:
     void loadFile();
+    void start();
+
+private slots:
+    void OnDataUpdated(const Items&);
 
 private:
     struct Impl;

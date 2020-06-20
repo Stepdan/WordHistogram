@@ -10,7 +10,7 @@ class QStringList;
 using Item = std::pair<QString, size_t>;
 using Items = std::vector<Item>;
 
-namespace WordHistogram::Interfaces
+namespace Proc::Interfaces
 {
 
 class IHistogram

@@ -4,9 +4,6 @@
 
 #include "UI/MainWindow.h"
 
-namespace WordHistogram
-{
-
 class Mediator : public QObject
 {
     Q_OBJECT
@@ -17,12 +14,15 @@ public:
 
 private slots:
     void OnLoad();
+    void OnStart();
+
+private:
+    void ProcessData(Items&&);
+    void ProcessProgress(size_t, bool);
 
 private:
     std::shared_ptr<MainWindow> m_mainWindow;
 
-    class Impl;
+    struct Impl;
     std::unique_ptr<Impl> m_impl;
 };
-
-}

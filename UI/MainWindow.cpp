@@ -18,9 +18,17 @@ MainWindow::MainWindow(QWidget *parent)
 {
     m_impl->ui.setupUi(this);
 
-    connect(m_impl->ui.loadButton, &QAbstractButton::clicked, this, &MainWindow::loadFile);
+    connect(m_impl->ui.loadButton   , &QAbstractButton::clicked, this, &MainWindow::loadFile);
+    connect(m_impl->ui.startButton  , &QAbstractButton::clicked, this, &MainWindow::start   );
 }
 
 //.....................................................................................
 
 MainWindow::~MainWindow() = default;
+
+//.....................................................................................
+
+void MainWindow::OnDataUpdated(const Items& items)
+{
+
+}

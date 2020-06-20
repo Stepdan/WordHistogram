@@ -4,7 +4,7 @@
 
 #include "Proc/Interfaces/IHistogram.h"
 
-namespace WordHistogram::Proc
+namespace Proc
 {
 
 class Histogram : public Interfaces::IHistogram

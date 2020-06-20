@@ -50,7 +50,7 @@ private:
 
 }
 
-namespace WordHistogram::Proc
+namespace Proc
 {
 
 class Histogram::Impl

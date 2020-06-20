@@ -4,7 +4,8 @@
 
 #include "Forwarder.h"
 
-namespace Utils {
+namespace Util
+{
 
 Forwarder::Forwarder()
 {
