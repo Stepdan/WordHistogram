@@ -9,6 +9,7 @@
 #include <QFileInfo>
 #include <QTextStream>
 
+#include "Util/FileUtils.h"
 #include "Util/Forwarder.h"
 
 #include "Proc/Histogram/Histogram.h"
@@ -35,6 +36,11 @@ public:
         , m_histogram(std::make_unique<Histogram>())
     {}
 
+    ~Impl()
+    {
+        Stop();
+    }
+
 public:
     void SetOpenPath(const QString& path)
     {
@@ -43,8 +49,7 @@ public:
 
     void Start()
     {
-        QFile file(m_path);
-        if(!file.exists() || !file.open(QFile::ReadOnly | QIODevice::Text))
+        if(!Util::CheckFile(m_path))
             return; // @todo Показать сообщение
 
         m_inProgress = true;
@@ -80,20 +85,25 @@ public:
 private:
     void ReaderFunction()
     {
-        QFile file(m_path);
-
         m_readerThreadStartedPromise.set_value();
 
-        m_forwarder.Forward([this, size = static_cast<size_t>(QFileInfo(file).size())](){ m_progressCallback(size, true); });
+        QFile file(m_path);
+        file.open(QFile::ReadOnly | QIODevice::Text);
 
-        QTextStream stream(&file);
-        while(m_inProgress && !stream.atEnd())
+        const auto fileSize = file.size();
+        m_forwarder.Forward([this, size = fileSize](){ m_progressCallback(size, true); });
+
+        while(m_inProgress && !file.atEnd())
         {
-            auto list = stream.readLine().split(REG_EXP, QString::SplitBehavior::SkipEmptyParts);
+            const auto lineStr = QString::fromUtf8(file.readLine());
+            if(lineStr.isEmpty())
+                continue;
+
+            auto list = lineStr.split(REG_EXP, QString::SplitBehavior::SkipEmptyParts);
             {
                 std::unique_lock<std::mutex> lock(m_progressMutex);
                 m_queue.push(std::move(list));
-                m_forwarder.Forward([this, &stream](){ m_progressCallback(static_cast<size_t>(stream.pos()), false); });
+                m_forwarder.Forward([this, size = fileSize - static_cast<size_t>(file.bytesAvailable())](){ m_progressCallback(size, false); });
             }
             m_progressCondition.notify_all();
         }
@@ -106,13 +116,13 @@ private:
         while(m_inProgress)
         {
             std::unique_lock<std::mutex> lock(m_progressMutex);
-            m_progressCondition.wait(lock, [this](){ return !m_queue.empty() && !m_inProgress; });
+            m_progressCondition.wait(lock, [this](){ return !m_queue.empty() || !m_inProgress; });
             while(!m_queue.empty())
             {
                 m_histogram->AddItems(m_queue.front());
                 m_queue.pop();
             }
-            m_forwarder.Forward([this]() { m_dataCallback(m_histogram->GetItems()); });
+            m_forwarder.Forward([this](){ m_dataCallback(m_histogram->GetItems()); });
         }
     }
 

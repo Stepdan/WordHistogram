@@ -18,13 +18,31 @@ MainWindow::MainWindow(QWidget *parent)
 {
     m_impl->ui.setupUi(this);
 
-    connect(m_impl->ui.loadButton   , &QAbstractButton::clicked, this, &MainWindow::loadFile);
     connect(m_impl->ui.startButton  , &QAbstractButton::clicked, this, &MainWindow::start   );
+
+    connect(m_impl->ui.loadButton   , &QAbstractButton::clicked, this, &MainWindow::OnLoadFile);
+
+    SetStartEnabled(false);
 }
 
 //.....................................................................................
 
 MainWindow::~MainWindow() = default;
+
+//.....................................................................................
+
+void MainWindow::SetStartEnabled(bool enabled)
+{
+    m_impl->ui.startButton->setEnabled(enabled);
+}
+
+//.....................................................................................
+
+void MainWindow::OnLoadFile()
+{
+    SetStartEnabled(false);
+    emit loadFile();
+}
 
 //.....................................................................................
 

@@ -5,6 +5,9 @@
 
 #include "Mediator.h"
 
+
+#include <QDebug>
+
 struct Mediator::Impl
 {
     std::unique_ptr<Proc::ProcessManager> processManager;
@@ -39,6 +42,7 @@ void Mediator::OnLoad()
         return;
 
     m_impl->processManager->SetOpenPath(path);
+    m_mainWindow->SetStartEnabled(true);
 }
 
 //.....................................................................................
@@ -52,12 +56,23 @@ void Mediator::OnStart()
 
 void Mediator::ProcessData(Items&& items)
 {
+    auto sortedItems = std::move(items);
+    std::sort(sortedItems.begin(), sortedItems.end());
+    QString str;
+    for(const auto& [word, value] : sortedItems)
+        str += word + " ";
 
+    qDebug() << "ITEMS: " << str;
 }
 
 //.....................................................................................
 
 void Mediator::ProcessProgress(size_t value, bool isMax)
 {
+    static size_t max;
 
+    if(isMax)
+        max = value;
+    else
+        qDebug() << "PROGRESS: " << value << " / " << max;
 }

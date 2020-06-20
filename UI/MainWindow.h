@@ -14,11 +14,15 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public:
+    void SetStartEnabled(bool);
+
 signals:
     void loadFile();
     void start();
 
 private slots:
+    void OnLoadFile();
     void OnDataUpdated(const Items&);
 
 private:

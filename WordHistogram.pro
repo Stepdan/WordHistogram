@@ -11,6 +11,7 @@ SOURCES += \
 	Proc/ProcessManager/ProcessManager.cpp \
 	UI/MainWindow.cpp \
 	UI/Scene/Scene.cpp \
+	Util/FileUtils.cpp \
 	Util/Forwarder.cpp \
 	Util/ProgressController/ProgressController.cpp \
 	main.cpp
@@ -28,6 +29,8 @@ HEADERS += \
 	UI/Scene/Scene.h \
 	Util/EventHandler/EventHandlerList.h \
 	Util/EventHandler/EventPublisher.h \
+	Util/FileUtils.h \
+	Util/FindPair.h \
 	Util/Forwarder.h \
 	Util/Interfaces/IProgressBar.h \
 	Util/Interfaces/IProgressController.h \

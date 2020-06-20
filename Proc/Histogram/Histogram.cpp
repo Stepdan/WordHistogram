@@ -2,22 +2,9 @@
 
 #include <QStringList>
 
+#include "Util/FindPair.h"
+
 #include "Histogram.h"
-
-namespace
-{
-
-bool operator<(const Item& i0, const Item& i1)
-{
-    return i0.second < i1.second;
-}
-
-bool operator==(const Item& i0, const Item& i1)
-{
-    return i0.first == i1.first;
-}
-
-}
 
 namespace
 {
@@ -34,11 +21,11 @@ public:
 
     void AddItem(const Item& item)
     {
-        if(auto findIt(std::find(m_items.begin(), m_items.end(), item)); findIt != m_items.cend())
+        if(auto findIt(Util::FindIteratorByFirst(m_items.begin(), m_items.end(), item.first)); findIt != m_items.cend())
             findIt->second = item.second;
         else if(m_items.size() < TOP_SIZE)
             m_items.push_back(item);
-        else if(auto minIt(std::min_element(m_items.begin(), m_items.end())); minIt->second < item.second)
+        else if(auto minIt(std::min_element(m_items.begin(), m_items.end(), [](const Item& i0, const Item& i1) { return i0.second < i1.second; })); minIt->second < item.second)
             *minIt = item;
     }
 
@@ -59,7 +46,10 @@ public:
     void AddItems(const QStringList& list)
     {
         for(const auto& word : list)
-            m_topList.AddItem({ word, ++m_histogram[word] });
+        {
+            const auto lowerWord = word.toLower();
+            m_topList.AddItem({ lowerWord, ++m_histogram[lowerWord] });
+        }
     }
 
     Items GetItems() const noexcept
