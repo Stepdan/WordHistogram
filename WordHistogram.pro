@@ -18,7 +18,6 @@ SOURCES += \
 	UI/Scene/Scene.cpp \
 	Util/FileUtils.cpp \
 	Util/Forwarder.cpp \
-	Util/ProgressController/ProgressController.cpp \
 	main.cpp
 
 FORMS += \
@@ -42,15 +41,9 @@ HEADERS += \
 	UI/LegendModel/LegendModelRoles.h \
 	UI/MainWindow.h \
 	UI/Scene/Scene.h \
-	Util/EventHandler/EventHandlerList.h \
-	Util/EventHandler/EventPublisher.h \
 	Util/FileUtils.h \
 	Util/FindPair.h \
 	Util/Forwarder.h \
-	Util/Interfaces/IProgressBar.h \
-	Util/Interfaces/IProgressController.h \
-	Util/Interfaces/IProgressObserver.h \
-	Util/ProgressController/ProgressController.h \
 	Util/RAII/PainterGuard.h \
 	Util/ThreadWorker.h
 

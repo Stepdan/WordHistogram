@@ -40,6 +40,8 @@ Mediator::~Mediator() = default;
 
 void Mediator::OnLoad()
 {
+    m_impl->processManager->Stop();
+
     const auto path = QFileDialog::getOpenFileName(m_mainWindow.get(), "Open file", QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).front(), "Text Files (*.txt)");
 
     if(path.isEmpty())
@@ -54,6 +56,7 @@ void Mediator::OnLoad()
 void Mediator::OnStart()
 {
     m_impl->processManager->Start();
+    m_mainWindow->SetStartEnabled(false);
 }
 
 //.....................................................................................
@@ -71,10 +74,5 @@ void Mediator::ProcessData(Items&& items)
 
 void Mediator::ProcessProgress(size_t value, bool isMax)
 {
-    static size_t max;
-
-    if(isMax)
-        max = value;
-    else
-        qDebug() << "PROGRESS: " << value << " / " << max;
+    m_mainWindow->UpdateProgress(value, isMax);
 }

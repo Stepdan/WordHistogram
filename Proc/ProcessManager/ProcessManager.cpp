@@ -22,6 +22,8 @@ namespace
 // Я ни в коем разе не джедай регулярок, сей грамоте не обучен, поэтому так:
 const QRegExp REG_EXP = QRegExp("\\W+");
 
+constexpr size_t INVALID_VALUE = -1;
+
 }
 
 namespace Proc
@@ -53,13 +55,16 @@ public:
             return; // @todo Показать сообщение
 
         m_inProgress = true;
+        m_needUpdateHistogram = false;
 
+        std::promise<void>().swap(m_readerThreadStartedPromise);
         m_readerThread = std::thread(&ProcessManager::Impl::ReaderFunction, this);
         {
             auto waitForReaderStart = m_readerThreadStartedPromise.get_future();
             waitForReaderStart.get();
         }
 
+        std::promise<void>().swap(m_histogramThreadStartedPromise);
         m_histogramThread = std::thread(&ProcessManager::Impl::HistogramFunction, this);
         {
             auto waitForHistogramStart = m_histogramThreadStartedPromise.get_future();
@@ -73,6 +78,8 @@ public:
             return;
 
         m_inProgress = false;
+        m_needUpdateHistogram = false;
+
         m_progressCondition.notify_all();
 
         if(m_readerThread.joinable())
@@ -93,6 +100,8 @@ private:
         const auto fileSize = file.size();
         m_forwarder.Forward([this, size = fileSize](){ m_progressCallback(size, true); });
 
+        size_t oldPercent = INVALID_VALUE;
+
         while(m_inProgress && !file.atEnd())
         {
             const auto lineStr = QString::fromUtf8(file.readLine());
@@ -103,8 +112,16 @@ private:
             {
                 std::unique_lock<std::mutex> lock(m_progressMutex);
                 m_queue.push(std::move(list));
-                m_forwarder.Forward([this, size = fileSize - static_cast<size_t>(file.bytesAvailable())](){ m_progressCallback(size, false); });
             }
+
+            const auto size = fileSize - static_cast<size_t>(file.bytesAvailable());
+            if(auto curValue(100 * size / fileSize); oldPercent == INVALID_VALUE || oldPercent < curValue || size == 0)
+            {
+                m_forwarder.Forward([this, value = size](){ m_progressCallback(value, false); });
+                oldPercent = curValue;
+                m_needUpdateHistogram = true;
+            }
+
             m_progressCondition.notify_all();
         }
     }
@@ -122,7 +139,11 @@ private:
                 m_histogram->AddItems(m_queue.front());
                 m_queue.pop();
             }
-            m_forwarder.Forward([this](){ m_dataCallback(m_histogram->GetItems()); });
+            if(m_needUpdateHistogram)
+            {
+                m_forwarder.Forward([this](){ m_dataCallback(m_histogram->GetItems()); });
+                m_needUpdateHistogram = false;
+            }
         }
     }
 
@@ -130,6 +151,8 @@ private:
     std::atomic_bool m_inProgress;
     std::mutex m_progressMutex;
     std::condition_variable m_progressCondition;
+
+    std::atomic_bool m_needUpdateHistogram;
 
     std::thread m_readerThread, m_histogramThread;
     std::promise<void> m_readerThreadStartedPromise, m_histogramThreadStartedPromise;

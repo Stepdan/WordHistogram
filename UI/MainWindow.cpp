@@ -56,6 +56,16 @@ void MainWindow::UpdateData(const Items& items)
 
 //.....................................................................................
 
+void MainWindow::UpdateProgress(size_t value, bool isMax)
+{
+    if(isMax)
+        m_impl->ui.progressBar->setMaximum(value);
+    else
+        m_impl->ui.progressBar->setValue(value);
+}
+
+//.....................................................................................
+
 QGraphicsScene* MainWindow::GetScene() const
 {
     return m_impl->ui.graphicsView->scene();
@@ -65,6 +75,10 @@ QGraphicsScene* MainWindow::GetScene() const
 
 void MainWindow::OnLoadFile()
 {
+    UpdateProgress(0);
     SetStartEnabled(false);
+    m_impl->ui.graphicsView->scene()->clear();
+    m_impl->legendModel->setData(QModelIndex(), QVariant::fromValue(Items()), static_cast<int>(LegendModelRoles::Items));
+
     emit loadFile();
 }
