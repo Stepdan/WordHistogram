@@ -2,9 +2,12 @@
 
 #include <memory>
 
+#include <QGraphicsScene>
 #include <QMainWindow>
 
 #include "Proc/Interfaces/IHistogram.h"
+
+#include "UI/Interfaces/IDrawer.h"
 
 class MainWindow : public QMainWindow
 {
@@ -16,6 +19,10 @@ public:
 
 public:
     void SetStartEnabled(bool);
+    void UpdateData(const Items&);
+
+public:
+    QGraphicsScene* GetScene() const;
 
 signals:
     void loadFile();
@@ -23,7 +30,6 @@ signals:
 
 private slots:
     void OnLoadFile();
-    void OnDataUpdated(const Items&);
 
 private:
     struct Impl;

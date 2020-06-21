@@ -9,6 +9,11 @@ SOURCES += \
 	Engine/Mediator.cpp \
 	Proc/Histogram/Histogram.cpp \
 	Proc/ProcessManager/ProcessManager.cpp \
+	UI/Drawer/Drawer.cpp \
+	UI/Drawer/DrawerFactory.cpp \
+	UI/LegendModel/Delegate/LegendModelDelegate.cpp \
+	UI/LegendModel/Item/LegendModelItem.cpp \
+	UI/LegendModel/LegendModel.cpp \
 	UI/MainWindow.cpp \
 	UI/Scene/Scene.cpp \
 	Util/FileUtils.cpp \
@@ -25,6 +30,16 @@ HEADERS += \
 	Proc/Histogram/Histogram.h \
 	Proc/Interfaces/IHistogram.h \
 	Proc/ProcessManager/ProcessManager.h \
+	UI/Drawer/Drawer.h \
+	UI/Drawer/DrawerFactory.h \
+	UI/Drawer/DrawerType.h \
+	UI/Interfaces/IDrawer.h \
+	UI/LegendModel/DeclareMetatype.h \
+	UI/LegendModel/Delegate/LegendModelDelegate.h \
+	UI/LegendModel/Item/ILegendModelItem.h \
+	UI/LegendModel/Item/LegendModelItem.h \
+	UI/LegendModel/LegendModel.h \
+	UI/LegendModel/LegendModelRoles.h \
 	UI/MainWindow.h \
 	UI/Scene/Scene.h \
 	Util/EventHandler/EventHandlerList.h \
@@ -36,6 +51,7 @@ HEADERS += \
 	Util/Interfaces/IProgressController.h \
 	Util/Interfaces/IProgressObserver.h \
 	Util/ProgressController/ProgressController.h \
+	Util/RAII/PainterGuard.h \
 	Util/ThreadWorker.h
 
 # Default rules for deployment.

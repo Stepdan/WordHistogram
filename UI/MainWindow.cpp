@@ -1,3 +1,9 @@
+#include "UI/LegendModel/DeclareMetatype.h"
+#include "UI/LegendModel/LegendModel.h"
+#include "UI/LegendModel/LegendModelRoles.h"
+#include "UI/LegendModel/Delegate/LegendModelDelegate.h"
+
+
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
@@ -8,6 +14,8 @@ struct MainWindow::Impl
     {}
 
     Ui::MainWindow ui;
+
+    QAbstractListModel* legendModel;
 };
 
 //.....................................................................................
@@ -18,9 +26,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     m_impl->ui.setupUi(this);
 
-    connect(m_impl->ui.startButton  , &QAbstractButton::clicked, this, &MainWindow::start   );
+    m_impl->legendModel = new LegendModel(this);
+    m_impl->ui.legendView->setModel(m_impl->legendModel);
+    m_impl->ui.legendView->setItemDelegate(new LegendModelDelegate(m_impl->ui.legendView));
 
-    connect(m_impl->ui.loadButton   , &QAbstractButton::clicked, this, &MainWindow::OnLoadFile);
+    connect(m_impl->ui.startButton, &QAbstractButton::clicked, this, &MainWindow::start     );
+    connect(m_impl->ui.loadButton , &QAbstractButton::clicked, this, &MainWindow::OnLoadFile);
 
     SetStartEnabled(false);
 }
@@ -38,15 +49,22 @@ void MainWindow::SetStartEnabled(bool enabled)
 
 //.....................................................................................
 
-void MainWindow::OnLoadFile()
+void MainWindow::UpdateData(const Items& items)
 {
-    SetStartEnabled(false);
-    emit loadFile();
+    m_impl->legendModel->setData(QModelIndex(), QVariant::fromValue(items), static_cast<int>(LegendModelRoles::Items));
 }
 
 //.....................................................................................
 
-void MainWindow::OnDataUpdated(const Items& items)
+QGraphicsScene* MainWindow::GetScene() const
 {
+    return m_impl->ui.graphicsView->scene();
+}
 
+//.....................................................................................
+
+void MainWindow::OnLoadFile()
+{
+    SetStartEnabled(false);
+    emit loadFile();
 }

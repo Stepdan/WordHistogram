@@ -3,14 +3,16 @@
 
 #include "Proc/ProcessManager/ProcessManager.h"
 
-#include "Mediator.h"
+#include "UI/Drawer/DrawerFactory.h"
 
+#include "Mediator.h"
 
 #include <QDebug>
 
 struct Mediator::Impl
 {
     std::unique_ptr<Proc::ProcessManager> processManager;
+    std::unique_ptr<Interfaces::IDrawer> m_drawer;
 };
 
 //.....................................................................................
@@ -24,8 +26,10 @@ Mediator::Mediator(const std::shared_ptr<MainWindow>& mainWindow)
     initializer.progressCallback = std::bind(&Mediator::ProcessProgress, this, std::placeholders::_1, std::placeholders::_2);
     m_impl->processManager = std::make_unique<Proc::ProcessManager>(std::move(initializer));
 
-    connect(m_mainWindow.get(), &MainWindow::loadFile   , this, &Mediator::OnLoad   );
-    connect(m_mainWindow.get(), &MainWindow::start      , this, &Mediator::OnStart  );
+    m_impl->m_drawer = CreateDrawer(DrawerType::Drawer, m_mainWindow->GetScene());
+
+    connect(m_mainWindow.get(), &MainWindow::loadFile, this, &Mediator::OnLoad );
+    connect(m_mainWindow.get(), &MainWindow::start   , this, &Mediator::OnStart);
 }
 
 //.....................................................................................
@@ -58,11 +62,9 @@ void Mediator::ProcessData(Items&& items)
 {
     auto sortedItems = std::move(items);
     std::sort(sortedItems.begin(), sortedItems.end());
-    QString str;
-    for(const auto& [word, value] : sortedItems)
-        str += word + " ";
 
-    qDebug() << "ITEMS: " << str;
+    m_impl->m_drawer->Draw(sortedItems);
+    m_mainWindow->UpdateData(sortedItems);
 }
 
 //.....................................................................................
