@@ -21,6 +21,8 @@ public:
     virtual void AddItems(const QStringList&) = 0;
 
     virtual Items GetItems() const = 0;
+
+    virtual void Clear() = 0;
 };
 
 }

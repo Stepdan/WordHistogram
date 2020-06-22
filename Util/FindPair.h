@@ -6,6 +6,12 @@
 #include <iterator>
 #include <type_traits>
 
+/*
+
+Поиск в контейнере пар по ключу
+
+*/
+
 namespace Util
 {
 

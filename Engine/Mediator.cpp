@@ -49,6 +49,7 @@ void Mediator::OnLoad()
 
     m_impl->processManager->SetOpenPath(path);
     m_mainWindow->SetStartEnabled(true);
+    m_mainWindow->Clear();
 }
 
 //.....................................................................................

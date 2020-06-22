@@ -36,6 +36,7 @@ public:
             rectItem->setBrush(QBrush(GetColor(i, size)));
             m_scene->addItem(rectItem);
         }
+        m_scene->update();
     }
 
 private:

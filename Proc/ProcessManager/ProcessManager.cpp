@@ -56,6 +56,7 @@ public:
 
         m_inProgress = true;
         m_needUpdateHistogram = false;
+        m_histogram->Clear();
 
         std::promise<void>().swap(m_readerThreadStartedPromise);
         m_readerThread = std::thread(&ProcessManager::Impl::ReaderFunction, this);
@@ -115,7 +116,7 @@ private:
             }
 
             const auto size = fileSize - static_cast<size_t>(file.bytesAvailable());
-            if(auto curValue(100 * size / fileSize); oldPercent == INVALID_VALUE || oldPercent < curValue || size == 0)
+            if(auto curValue(100 * size / fileSize); oldPercent == INVALID_VALUE || oldPercent < curValue)
             {
                 m_forwarder.Forward([this, value = size](){ m_progressCallback(value, false); });
                 oldPercent = curValue;
@@ -145,6 +146,8 @@ private:
                 m_needUpdateHistogram = false;
             }
         }
+
+        m_forwarder.Forward([this](){ m_dataCallback(m_histogram->GetItems()); });
     }
 
 private:

@@ -31,6 +31,8 @@ public:
 
     Items GetItems() const noexcept { return m_items; }
 
+    void Clear() { m_items.clear(); }
+
 private:
     Items m_items;
 };
@@ -55,6 +57,12 @@ public:
     Items GetItems() const noexcept
     {
         return m_topList.GetItems();
+    }
+
+    void Clear()
+    {
+        m_histogram.clear();
+        m_topList.Clear();
     }
 
 private:
@@ -84,6 +92,13 @@ void Histogram::AddItems(const QStringList& list)
 Items Histogram::GetItems() const
 {
     return m_impl->GetItems();
+}
+
+//.....................................................................................
+
+void Histogram::Clear()
+{
+    m_impl->Clear();
 }
 
 }

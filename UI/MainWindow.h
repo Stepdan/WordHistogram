@@ -21,6 +21,7 @@ public:
     void SetStartEnabled(bool);
     void UpdateData(const Items&);
     void UpdateProgress(size_t value, bool isMax = false);
+    void Clear();
 
 public:
     QGraphicsScene* GetScene() const;

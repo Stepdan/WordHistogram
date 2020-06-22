@@ -16,6 +16,7 @@ public:
 public:
     void AddItems(const QStringList&) override;
     Items GetItems() const override;
+    void Clear() override;
 
 private:
     class Impl;
